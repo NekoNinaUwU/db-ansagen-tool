@@ -103,8 +103,6 @@ elif len(str(numberAudioRequest)) == 6:
 
 
 
-
-
 # Definition of the announcement elements
 for departure in apiResponse["departures"]:
     trainPlatform = departure["platform"]
