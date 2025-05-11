@@ -1,0 +1,9 @@
+- fix delay reasons
+- make things to functions
+- add station selection
+- add fällt heute aus
+- add "weiter als"
+- add track changes
+- add "zug xy MIT zug yz"
+- add ihre nächsten anschlüsse
+- add heute mit halt in, ohne halt in
