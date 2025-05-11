@@ -13,7 +13,7 @@ tableCities = pandas.read_excel(basePath + "_info/2013_01_02_info.xls", sheet_na
 tableReasons = pandas.read_excel(basePath + "_info/2013_01_02_info.xls", sheet_name="grund_dafuer ") #Path to the Info Excel file
 
 # API Request
-URL = "https://dbf.finalrewind.org/Mannheim%20Hbf.json?detailed=1&version=3"
+URL = "https://dbf.finalrewind.org/Stuttgart%20Hbf.json?detailed=1&version=3"
 apiResponse = requests.get(url=URL,stream=True).json()
 
 platformAudio = basePath + f"dt/module_3_1/016.wav"
@@ -244,12 +244,12 @@ def cancelInformaton():
         speakTrainName(trainFriendlyName)
         if not trainScheduluedDeparture == None or trainScheduluedDeparture == "":
             playsound(trainToAudio)
-            speakCity(trainDestination)
+            speakCity(trainDestination,kurz=False)
             playsound(departureOnTimeAudio)
             speakTime(trainScheduluedDeparture)
         else:
             playsound(trainFromAudio)
-            speakCity(trainOrigin)
+            speakCity(trainOrigin, kurz=False)
             playsound(arrivalOnTimeAudio)
             speakTime(trainScheduledArrival)
         playsound(trainCancelledAudio)
@@ -261,12 +261,12 @@ def trackChangeInformation():
         speakTrainName(trainFriendlyName)
         if not trainScheduluedDeparture == None or trainScheduluedDeparture == "":
             playsound(trainToAudio)
-            speakCity(trainDestination)
+            speakCity(trainDestination,kurz=False)
             playsound(departureOnTimeAudio)
             speakTime(trainScheduluedDeparture)
         else:
             playsound(trainFromAudio)
-            speakCity(trainOrigin)
+            speakCity(trainOrigin,kurz=False)
             playsound(arrivalOnTimeAudio)
             speakTime(trainScheduledArrival)
         playsound(trainTrackChangeAudio)
@@ -277,12 +277,12 @@ def trackChangeInformation():
             speakTrainName(trainFriendlyName)
             if not trainScheduluedDeparture == None or trainScheduluedDeparture == "":
                 playsound(trainToAudio)
-                speakCity(trainDestination)
+                speakCity(trainDestination,kurz=False)
                 playsound(departureOnTimeAudio)
                 speakTime(trainScheduluedDeparture)
             else:
                 playsound(trainFromAudio)
-                speakCity(trainOrigin)
+                speakCity(trainOrigin,kurz=False)
                 playsound(arrivalOnTimeAudio)
                 speakTime(trainScheduledArrival)
         playsound(trainTrackChangeAudio)
