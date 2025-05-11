@@ -317,10 +317,9 @@ for departure in apiResponse["departures"]:
     if trainPlatform == "":
         continue
     
-    #arrivalOfTrain()
-    #delayInformation()
-    #cancelInformaton()
-    print(trainPlatform + " " + trainScheduledPlatform)
+    arrivalOfTrain()
+    delayInformation()
+    cancelInformaton()
     trackChangeInformation()
 
     #input()

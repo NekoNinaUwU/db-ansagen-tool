@@ -1,4 +1,5 @@
 - fix delay reasons
+- fix platforms/lines with letters in it (thanks, bwegt)
 - add station selection
 - add reasons to fällt aus
 - add "weiter als"
