@@ -8,8 +8,10 @@ from difflib import SequenceMatcher
 
 #Base Definitions
 
-basePath = "/home/nekonina/Documents/bahn/" #Root Folder
+basePath = "D:/BahnAnsagen/" #Root Folder
 tableCities = pandas.read_excel(basePath + "_info/2013_01_02_info.xls", sheet_name="ziele") #Path to the Info Excel file
+tableReasons = pandas.read_excel(basePath + "_info/2013_01_02_info.xls", sheet_name="grund_dafuer ") #Path to the Info Excel file
+
 # API Request
 URL = "https://dbf.finalrewind.org/Karlsruhe%20Hbf.json?detailed=1&version=3"
 apiResponse = requests.get(url=URL,stream=True).json()
@@ -124,6 +126,7 @@ def speakNumber(number):
 #Generating Time
 def speakTime(time):
     timeAudioRequest = time
+    print(timeAudioRequest)
     if str(time)[3:] == "00":
         hour = str(time)[:2]
         hourAudio = basePath + f"dt/zeiten/stunden/tief/{hour}.wav"
@@ -138,6 +141,7 @@ def speakTime(time):
 
 #Train Types
 def speakTrainName(trainName):
+    print(trainName)
     regexResult = re.search(r"(.+?)(\d+)",trainName)
     for trainType in regexResult.group(1).split():
         traintypeAudio = basePath + f"/dt/zuggattungen/hoch/{trainType.lower()}.wav"
@@ -148,11 +152,21 @@ def speakTrainName(trainName):
     trainNumber = regexResult.group(2)
     speakNumber(trainNumber)
 
-def speakCity(cityname):
+def speakCity(cityname,kurz=True,hoch=True):
     print(cityname)
+    variantString = "variante1"
+    heightString = "hoch"
+    if not kurz: variantString = "variante2"
+    if not hoch: heightString = "tief"
     sorted = tableCities.sort_values(by="Tarifmäßige_Bahnhofsbezeichnung", key=lambda col: col.transform(lambda x: -similar(x,cityname)))
-    cityNameAudio = basePath + f"/dt/ziele/variante2/hoch/{sorted.iloc[0]["Datei"]}"
+    cityNameAudio = basePath + f"/dt/ziele/{variantString}/{heightString}/{sorted.iloc[0]["Datei"]}"
     playsound(cityNameAudio)
+
+def speakDelayReason(reasonKeyword):
+    print(reasonKeyword)
+    sortedReason = tableReasons.sort_values(by="dt", key=lambda col: col.transform(lambda x: -similar(x,reasonKeyword)))
+    reasonAudio = basePath + f"/dt/gruende/grund_dafuer/{sortedReason.iloc[0]["Datei-Name"]}"
+    playsound(reasonAudio)
 
 # Definition of the announcement elements
 for departure in apiResponse["departures"]:
@@ -180,17 +194,15 @@ for departure in apiResponse["departures"]:
     speakNumber(trainPlatform)
     playsound(entryAudio)
     speakTrainName(trainFriendlyName)
-
-
     if not trainScheduluedDeparture == None or trainScheduluedDeparture == "":
         playsound(trainToAudio)
-        speakCity(trainDestination)
+        speakCity(trainDestination,False)
         if trainVia:
             playsound(viaSound)
             try: 
-                speakCity(trainVia[1])
+                speakCity(trainVia[1],hoch=False)
             except:
-                speakCity(trainVia[0])
+                speakCity(trainVia[0],hoch=False)
         if trainDepartureDelay == None or trainDepartureDelay < 5:
 
             playsound(departureOnTimeAudio)
@@ -200,7 +212,7 @@ for departure in apiResponse["departures"]:
         
     else:
         playsound(trainFromAudio)
-        speakCity(trainOrigin)
+        speakCity(trainOrigin,False)
         if trainArrivalDelay == None or trainArrivalDelay < 5:
             playsound(arrivalOnTimeAudio)
         else:
@@ -212,10 +224,30 @@ for departure in apiResponse["departures"]:
     if (trainDepartureDelay or 0) >=5:
         playsound(trainInformationOn)
         speakTrainName(trainFriendlyName)
+        playsound(trainToAudio)
+        speakCity(trainDestination, False)
+        if trainVia:
+            playsound(viaSound)
+            try: 
+                speakCity(trainVia[1],hoch=False)
+            except:
+                speakCity(trainVia[0],hoch=False)
         playsound(departureOnTimeAudio)
         speakTime(trainScheduluedDeparture)
         
         h = min(int(trainDepartureDelay / 5) * 5 if trainDepartureDelay < 60 else int(trainDepartureDelay / 10) * 10, 210)
         playsound(basePath + f"dt/zeiten/verspaetung_heute/{h:03}.wav")
-
-    input()
+    elif (trainArrivalDelay or 0) >=5 and not trainDepartureDelay:
+        playsound(trainInformationOn)
+        speakTrainName(trainFriendlyName)
+        playsound(trainFromAudio)
+        speakCity(trainOrigin, False)
+        playsound(arrivalOnTimeAudio)
+        speakTime(trainScheduledArrival)
+        
+        h = min(int(trainArrivalDelay / 5) * 5 if trainArrivalDelay < 60 else int(trainArrivalDelay / 10) * 10, 210)
+        playsound(basePath + f"dt/zeiten/verspaetung_heute/{h:03}.wav")
+    #if (trainDepartureDelay or 0) >= 10 or (trainArrivalDelay or 0) >=10:
+    #    speakDelayReason(trainDelayMessage)
+        
+    #input()
