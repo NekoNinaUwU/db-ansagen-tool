@@ -13,7 +13,7 @@ tableCities = pandas.read_excel(basePath + "_info/2013_01_02_info.xls", sheet_na
 tableReasons = pandas.read_excel(basePath + "_info/2013_01_02_info.xls", sheet_name="grund_dafuer ") #Path to the Info Excel file
 
 # API Request
-URL = "https://dbf.finalrewind.org/Stuttgart%20Hbf.json?detailed=1&version=3"
+URL = "https://dbf.finalrewind.org/Karlsruhe%20Hbf.json?detailed=1&version=3"
 apiResponse = requests.get(url=URL,stream=True).json()
 
 platformAudio = basePath + f"dt/module_3_1/016.wav"
@@ -290,9 +290,11 @@ def trackChangeInformation():
 
 
         
-
+departureCount = 0
 # Definition of the announcement elements
 for departure in apiResponse["departures"]:
+    nextDeparture = apiResponse["departures"][departureCount+1]
+
     trainPlatform = departure["platform"]
     try:
         trainScheduledPlatform = departure["scheduledPlatform"]
@@ -312,14 +314,17 @@ for departure in apiResponse["departures"]:
     trainIsCancelled = departure["isCancelled"]
     trainDelayMessage = departure["messages"]["delay"]
 
-  
-
     if trainPlatform == "":
         continue
     
-    arrivalOfTrain()
-    delayInformation()
-    cancelInformaton()
-    trackChangeInformation()
+    if trainScheduluedDeparture == nextDeparture["scheduledDeparture"] and trainPlatform == nextDeparture["platform"]:
+        print("hurensohn")
+
+    #arrivalOfTrain()
+    #delayInformation()
+    #cancelInformaton()
+    #trackChangeInformation()
 
     #input()
+
+    departureCount += 1
